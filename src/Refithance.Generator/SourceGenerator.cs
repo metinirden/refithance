@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -11,6 +12,7 @@ namespace Refithance.Generator;
 internal sealed class SourceGenerator : IIncrementalGenerator
 {
     private const string RefithanceAttribute = "Refithance.Generator.RefithanceAttribute";
+    private const string RefithanceWebAssemblyName = "Refithance.Web";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -26,16 +28,25 @@ internal sealed class SourceGenerator : IIncrementalGenerator
             transform: GetTypeInformationForGeneration
         ).Collect();
 
-        context.RegisterImplementationSourceOutput(interfacesToRegister,
+        var interfacesToRegisterWithCompilation = context.CompilationProvider.Combine(interfacesToRegister);
+        context.RegisterImplementationSourceOutput(interfacesToRegisterWithCompilation,
             static (spc, source) => GenerateSource(source, spc)
         );
     }
 
-    private static void GenerateSource(ImmutableArray<RefithanceInfo> source, SourceProductionContext context)
+    private static void GenerateSource((Compilation compilation, ImmutableArray<RefithanceInfo> refithanceInfos) source,
+        SourceProductionContext context)
     {
+        var (compilation, refithanceInfos) = source;
+        var compilationIncludesRefithanceWeb = compilation.ReferencedAssemblyNames.Any(
+            a => a.Name.Contains(RefithanceWebAssemblyName)
+        );
+
         context.AddSource(SourceGeneratorHelpers.ServiceCollectionExtensionsFileName,
             SourceText.From(
-                SourceGeneratorHelpers.GenerateServiceCollectionExtensionsClass(new StringBuilder(), source),
+                SourceGeneratorHelpers.GenerateServiceCollectionExtensionsClass(refithanceInfos,
+                    compilationIncludesRefithanceWeb
+                ),
                 Encoding.UTF8
             )
         );

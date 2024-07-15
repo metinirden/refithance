@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\src\Refithance.Generator\Refithance.Generator.csproj" OutputItemType="Analyzer" PrivateAssets="All"/>
     <ProjectReference Include="..\..\src\Refithance\Refithance.csproj"/>
     <ProjectReference Include="..\..\src\Refithance.Configuration\Refithance.Configuration.csproj"/>
+    <ProjectReference Include="..\..\src\Refithance.Web\Refithance.Web.csproj" />
   </ItemGroup>
 
 </Project>

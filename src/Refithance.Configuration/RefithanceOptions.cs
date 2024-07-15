@@ -9,6 +9,8 @@ public class RefithanceOptions
     [ValidateNamedRefithanceDefinitions]
     public Dictionary<string, RefithanceDefinition> Definitions { get; set; } = new();
 
+    public List<string> GlobalHeaderPassThrough { get; set; } = [];
+
     public RefithanceDefinition Get(string name)
     {
         if (Definitions.TryGetValue(name, out var refithanceDefinition))

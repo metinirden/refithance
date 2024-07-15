@@ -4,11 +4,14 @@ using Refithance;
 using Refithance.Configuration;
 using Refithance.Debugger.Apis;
 using Refithance.Generator;
+using Refithance.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddRefithance();
+builder.Services.AddTransient<HeaderPassThroughDelegatingHandler>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
